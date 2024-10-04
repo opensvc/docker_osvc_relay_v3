@@ -11,7 +11,7 @@ on:
   push:
     branches: [ "main" ]
     # Publish semver tags as releases.
-    tags: [ 'v*.*.*' ]
+    tags: [ '*.*.*' ]
   pull_request:
     branches: [ "main" ]
 
@@ -19,7 +19,7 @@ env:
   # Use docker.io for Docker Hub if empty
   REGISTRY: ghcr.io
   # github.repository as <account>/<repo>
-  IMAGE_NAME: relay3
+  IMAGE_NAME: opensvc/relay3
 
 
 jobs:
