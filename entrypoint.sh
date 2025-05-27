@@ -7,7 +7,7 @@ then
     if [ -f /etc/opensvc/cluster.conf ]
     then
         echo "Skip relay bootstrap from /config (cluster.conf already exists)"
-        exec om daemon start --foreground
+        exec om daemon run
     fi
 
     echo "Configuring OpenSVC with cluster name: ${HOSTNAME}"
@@ -23,7 +23,7 @@ then
             echo "Processing configuration file: $file"
 
             key=$(basename "$file")
-            om system/sec/cert add --key "$key" --from "$file"
+            om system/sec/cert key add --name "$key" --from "$file"
         done
     fi
 
@@ -42,7 +42,7 @@ then
             exit 1
         }
 
-        om "system/usr/$RELAY_USER" add --key password --from "$file" || {
+        om "system/usr/$RELAY_USER" key add --name password --from "$file" || {
             echo "Failed to set password for user $RELAY_USER."
             exit 1
         }
@@ -51,10 +51,10 @@ then
     for file in $(ls /config/cluster/* 2>/dev/null)
     do
         key=$(basename "$file")
-	om cluster set --kw "$key=$(cat $file)" --local
+	om cluster config update --set "$key=$(cat $file)"
     done
 
-    exec om daemon start --foreground
+    exec om daemon run
 else
     exec "$@"
 fi
