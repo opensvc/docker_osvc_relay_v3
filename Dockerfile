@@ -5,17 +5,17 @@ ARG OSVC_GITREPO_URL=${OSVC_GITREPO_URL:-https://github.com/opensvc/om3.git}
 
 WORKDIR /opt
 
-RUN git clone $OSVC_GITREPO_URL
+RUN git clone $OSVC_GITREPO_URL && echo "Cache busted at $(date): git clone $OSVC_GITREPO_URL"
 
 WORKDIR /opt/om3
 
-RUN git checkout $BRANCH
+RUN git checkout $BRANCH && echo "Cache busted at $(date): git checkout $BRANCH"
 
 RUN go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
 
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/om ./cmd/om/
 
-RUN ./bin/om node version 
+RUN echo "Cache busted at $(date): om node version: $(./bin/om node version)"
 
 FROM alpine:3.20
 
