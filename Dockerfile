@@ -1,36 +1,12 @@
-FROM golang:latest AS builder
 
-ARG BRANCH=${BRANCH:-main}
-ARG OSVC_GITREPO_URL=${OSVC_GITREPO_URL:-https://github.com/opensvc/om3.git}
+ARG OM_IMAGE=ghcr.io/opensvc/om:3.0.0-rc30
 
-WORKDIR /opt
+FROM ${OM_IMAGE} AS om_provider
 
-RUN git clone $OSVC_GITREPO_URL && echo "Cache busted at $(date): git clone $OSVC_GITREPO_URL"
+FROM alpine:3.24.1@sha256:28bd5fe8b56d1bd048e5babf5b10710ebe0bae67db86916198a6eec434943f8b
 
-WORKDIR /opt/om3
-
-RUN git checkout $BRANCH && echo "Cache busted at $(date): git checkout $BRANCH"
-
-RUN go install github.com/oapi-codegen/oapi-codegen/v2/cmd/oapi-codegen@v2.3.0
-
-RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o bin/om ./cmd/om/
-
-RUN echo "Cache busted at $(date): om node version: $(./bin/om node version)"
-
-FROM alpine:3.20
-
-RUN apk add --no-cache bash
-
-COPY --from=builder /opt/om3/bin/om /usr/bin/om
-COPY ./entrypoint.sh /
-
-RUN chmod +x /entrypoint.sh
+COPY --from=om_provider /usr/bin/om /usr/bin/om
+COPY --chmod=0755 ./entrypoint.sh /
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["relay"]
-
-LABEL \
-    org.opencontainers.image.authors="OpenSVC SAS" \
-    org.opencontainers.image.created="${BUILDTIME}" \
-    org.opencontainers.image.licenses="Apache-2.0" \
-    org.opencontainers.image.url="https://github.com/opensvc/docker_osvc_relay_v3"
