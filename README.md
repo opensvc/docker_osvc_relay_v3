@@ -1,5 +1,7 @@
 # om3 relay
 
+[![docker-build](https://github.com/opensvc/docker_osvc_relay_v3/actions/workflows/docker-publish.yml/badge.svg)](https://github.com/opensvc/docker_osvc_relay_v3/actions/workflows/docker-publish.yml)
+
 ## Requirements
 
 - **Docker** installed
