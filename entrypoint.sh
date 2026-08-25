@@ -51,7 +51,8 @@ then
     for file in $(ls /config/cluster/* 2>/dev/null)
     do
         key=$(basename "$file")
-        om cluster config update --set "$key=$(cat $file)"
+        echo "update cluster config keyword $key ..."
+        om cluster config update --local --set "$key=$(cat $file)"
     done
 
     exec om daemon run
