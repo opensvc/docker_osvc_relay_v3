@@ -1,5 +1,5 @@
 
-ARG OM_IMAGE=ghcr.io/opensvc/om:3.0.0-rc48
+ARG OM_IMAGE=ghcr.io/opensvc/om:3.0.0-rc57
 
 FROM ${OM_IMAGE} AS om_provider
 
